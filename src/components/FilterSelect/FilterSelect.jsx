@@ -5,26 +5,30 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const FilterSelect = () => {
-    const [age, setAge] = useState('');
+const FilterSelect = ({title,state, setState, array}) => {
 
     const handleChange = (event) => {
-        setAge(event.target.value);
+        setState(event.target.value);
     };
     return (
         <Box sx={{ minWidth: 120 }} className='catalog__aside-select'>
             <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                <InputLabel id="demo-simple-select-label">{title}</InputLabel>
                 <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
-                    label="Age"
+                    value={state}
+                    label={title}
                     onChange={handleChange}
                 >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    {
+                        array.map((item) => (
+                            <MenuItem key={item} value={item}>{
+                                item === 'asc' ? 'по возрастанию цены' : item === 'desc' ? 'по убыванию цены' : item === 'rate' ? 'по популярности' : item
+                            }</MenuItem>
+                        ))
+                    }
+                    <MenuItem value={''}>По умолчанию</MenuItem>
                 </Select>
             </FormControl>
         </Box>

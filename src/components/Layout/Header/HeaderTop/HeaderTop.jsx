@@ -19,6 +19,9 @@ const HeaderTop = () => {
                         <Link to={'/contact'} className='header__top-link'>
                             Контакты
                         </Link>
+                        <Link to={'/catalog'} className='header__top-link'>
+                            Каталог
+                        </Link>
                     </div>
                     <div className="header__top-menu">
                         <a href="tel: 8 (964) 89 99 119" className='header__top-link'>

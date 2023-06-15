@@ -15,6 +15,7 @@ import api from "./config/Api/api";
 import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
 import Favorites from "./pages/Favorites/Favorites";
+import CheckOut from "./pages/CheckOut/CheckOut";
 
 function App() {
     // const [users, setUsers] = useState([]);
@@ -36,6 +37,7 @@ function App() {
                 <Route path='/cart' element={<Cart/>}/>
                 <Route path='/room' element={<Room/>}/>
                 <Route path='/favorites' element={<Favorites/>}/>
+                <Route path='/checkout' element={<CheckOut/>}/>
                 <Route path='*' element={<NotFound/>}/>
             </Route>
             <Route path='/login' element={<Login/>}/>

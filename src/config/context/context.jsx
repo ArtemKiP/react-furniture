@@ -10,6 +10,8 @@ const Context = (props) => {
     const [user, setUser] = useState({email: ''});
     const [hitSale, setHitSale] = useState([]);
     const [favorites, setFavorites] = useState([]);
+    const [search, setSearch] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     useEffect(() => {
         if (localStorage.getItem('user') !== null) {
@@ -59,10 +61,80 @@ const Context = (props) => {
         localStorage.removeItem('user');
         navigate('/')
     };
+    const addCarts = (product) => {
+        api.patch(`users/${user.id}`, {
+            headers: {
+                'content-type': 'application/json'
+            },
+            json: {
+            carts: [...user.carts, {...product, count: 1}]
+            }
+        }).json().then((res) => {
+            setUser(res);
+            localStorage.setItem('user', JSON.stringify(res))
+        })
+    };
+    const addCartsCountPlus = (id) => {
+        api.patch(`users/${user.id}`, {
+            headers: {
+                'content-type': 'application/json'
+            },
+            json: {
+                carts: user.carts.map(item => {
+                    if (item.id === id){
+                        return {...item, count: item.count + 1}
+                    }
+                    return item
+                })
+            }
+        }).json().then((res) => {
+            setUser(res);
+            localStorage.setItem('user', JSON.stringify(res))
+        })
+    };
+    const removeCartsCountMinus = (id) => {
+        api.patch(`users/${user.id}`, {
+            headers: {
+                'content-type': 'application/json'
+            },
+            json: {
+                carts: user.carts.find(item => item.id === id).count > 1 ? user.carts.map(item => {
+                    if (item.id === id){
+                        return {...item, count: item.count - 1}
+                    }
+                    return item
+                }) : user.carts.filter((item) => item.id !== id)
+            }
+        }).json().then((res) => {
+            setUser(res);
+            localStorage.setItem('user', JSON.stringify(res))
+        })
+    };
+
+    const addOrder = (order, setPopup, redirect) => {
+        api.patch(`users/${user.id}`, {
+            headers: {
+                'content-type': 'application/json'
+            },
+            json: {
+                point: Math.floor(user.point + (order.totalPrice / 100 * 7)),
+                orders: [...user.orders, order],
+                carts: []
+            }
+        }).json().then((res) => {
+            setUser(res);
+            localStorage.setItem('user', JSON.stringify(res));
+            setPopup(true);
+            redirect()
+        })
+    };
 
     const getHitSale = () => {
         api('products?_sort=sale&_order=desc&_limit=12').json()
-            .then((res) => setHitSale(res))
+            .then((res) => {
+                setHitSale(res);
+                setIsLoading(false)
+            })
     };
 
     const favoritesHandler = (product) => {
@@ -78,10 +150,15 @@ const Context = (props) => {
     useEffect(() => {
         localStorage.setItem('favorites' , JSON.stringify(favorites))
     }, [favorites]);
+
+
+
     
 
     let value = {
-        user, setUser, registerUser, loginUser, logOutUser, hitSale, getHitSale, favoritesHandler, favorites
+        user, setUser, registerUser, loginUser, logOutUser, hitSale, getHitSale, favoritesHandler, favorites,
+        search, setSearch, addCarts, addCartsCountPlus, removeCartsCountMinus, addOrder,
+        setIsLoading, isLoading
     };
 
     return <CustomContext.Provider value={value}>

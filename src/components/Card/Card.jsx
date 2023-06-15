@@ -1,10 +1,11 @@
 import React, {useContext} from 'react';
 import product from '../../assets/product.png'
 import {AiOutlineHeart, AiFillHeart} from "react-icons/ai";
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {CustomContext} from "../../config/context/context";
 const Card = ({item}) => {
-const {favorites, favoritesHandler} = useContext(CustomContext);
+const {favorites, favoritesHandler, addCarts, user, addCartsCountPlus, removeCartsCountMinus} = useContext(CustomContext);
+const navigate = useNavigate();
     return (
         <div className="card">
             <span className="card__fav" onClick={() => favoritesHandler(item)}>
@@ -13,7 +14,7 @@ const {favorites, favoritesHandler} = useContext(CustomContext);
                 }
             </span>
             <Link to={`product/${item.id}`}>
-                <img src={`/${item.image}`} alt="" className="card__image"/>
+                <img src={`${item.images[0]}`} alt="" className="card__image"/>
             </Link>
             <h3 className="card__title">
                 {item.title}
@@ -44,9 +45,32 @@ const {favorites, favoritesHandler} = useContext(CustomContext);
                         {item.height} СМ
                     </p>
                 </div>
-                <button className="card__sizes-btn">
-                    Добавить в корзину
-                </button>
+                {
+                    user.carts?.some(el => el.id === item.id) ?
+                        <div className='card__sizes-count'>
+                        <button style={{background: 'red'}} type='button' onClick={() => removeCartsCountMinus(item.id)}>
+                            -
+                        </button>
+                        <span>{
+                            user.carts.find(el => el.id === item.id).count
+                        }</span>
+                        <button style={{background: 'green'}} type='button' onClick={() => addCartsCountPlus(item.id)}>
+                            +
+                        </button>
+                    </div>
+                        :
+                        <button className="card__sizes-btn" onClick={() => {
+                        if ('id' in user){
+                            addCarts(item)
+                        }else{
+                            navigate('/login')
+                        }
+                    }}>
+                        Добавить в корзину
+                    </button>
+                }
+
+
             </div>
         </div>
     );
